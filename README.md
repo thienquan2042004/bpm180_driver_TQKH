@@ -23,10 +23,14 @@ Driver BMP180 là một trình điều khiển thiết bị nhân Linux dành ch
 
 Nguồn cấp: 1.8V – 3.6V  
 
-- Địa chỉ I2C mặc định: 0x77  
+Địa chỉ I2C mặc định: 0x77  
+
 Dải đo áp suất: 30.000 – 110.000 Pa  
+
 Độ phân giải: 1 Pa / 0.1°C  
+
 Độ chính xác tuyệt đối: ±100 Pa / ±1.0°C  
+
 Độ chính xác tương đối: ±12 Pa / ±1.0 m  
 
 
