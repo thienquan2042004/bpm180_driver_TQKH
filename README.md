@@ -87,9 +87,9 @@ make
 sudo insmod bmp180_driver.ko
 ```
 ### 4.4 Kiểm tra kernel log
-
+```js
 dmesg | tail
-
+```
 ### 4.5 Chạy chương trình test
 ```js
 gcc bmp180_test.c -o run
