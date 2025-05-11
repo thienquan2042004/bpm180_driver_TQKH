@@ -64,6 +64,7 @@ echo 1-0077 | sudo tee /sys/bus/i2c/devices/1-0077/driver/unbind
 ### 4.2 Thiết lập Device Tree
 
 sudo dts -I dts -O dtb -o bcm2710-rpi-zero-2-w.dtb bcm2710-rpi-zero-2-w.dts
+
 sudo dtc -I dts -O dtb -o bcm2710-rpi-zero-2-w.dtb bcm2710-rpi-zero-2-w.dts
 
 
@@ -71,13 +72,17 @@ Thêm node cấu hình vào file .dts:
 
 dts
 bmp180@77 {
+
     compatible = "bosch,bmp180";
+    
     reg = <0x77>;
+    
 };
 
 ### 4.3 Biên dịch và nạp module
 
 make
+
 sudo insmod bmp180_driver.ko
 
 ### 4.4 Kiểm tra kernel log
