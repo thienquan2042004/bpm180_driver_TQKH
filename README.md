@@ -62,11 +62,11 @@ Nếu thấy địa chỉ 0x77, cảm biến đã được nhận. Nếu thấy 
 echo 1-0077 | sudo tee /sys/bus/i2c/devices/1-0077/driver/unbind
 ```
 ### 4.2 Thiết lập Device Tree
-
+```js
 sudo dts -I dts -O dtb -o bcm2710-rpi-zero-2-w.dtb bcm2710-rpi-zero-2-w.dts
 
 sudo dtc -I dts -O dtb -o bcm2710-rpi-zero-2-w.dtb bcm2710-rpi-zero-2-w.dts
-
+```
 
 Thêm node cấu hình vào file .dts:
 
@@ -81,19 +81,21 @@ bmp180@77 {
 };
 ```
 ### 4.3 Biên dịch và nạp module
-
+```js
 make
 
 sudo insmod bmp180_driver.ko
-
+```
 ### 4.4 Kiểm tra kernel log
 
 dmesg | tail
 
 ### 4.5 Chạy chương trình test
-
+```js
 gcc bmp180_test.c -o run
+
 sudo ./run
+```
 ## 6. Tài liệu tham khảo
 
 BMP180 Datasheet từ Bosch Sensortec
