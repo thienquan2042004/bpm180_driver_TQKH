@@ -54,13 +54,13 @@ Giao tiếp user space để người dùng:
 ## 4. Cài đặt và sử dụng
 
 ### 4.1 Kiểm tra kết nối cảm biến
-
+```js
 sudo i2cdetect -y 1
-
+```
 Nếu thấy địa chỉ 0x77, cảm biến đã được nhận. Nếu thấy UU, hãy hủy liên kết driver đang chiếm dụng:
-
+```js
 echo 1-0077 | sudo tee /sys/bus/i2c/devices/1-0077/driver/unbind
-
+```
 ### 4.2 Thiết lập Device Tree
 
 sudo dts -I dts -O dtb -o bcm2710-rpi-zero-2-w.dtb bcm2710-rpi-zero-2-w.dts
@@ -79,7 +79,7 @@ bmp180@77 {
     reg = <0x77>;
     
 };
-
+```
 ### 4.3 Biên dịch và nạp module
 
 make
