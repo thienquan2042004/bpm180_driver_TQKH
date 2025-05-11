@@ -2,8 +2,11 @@
 
 *Thành viên thực hiện:*
 •	Huỳnh Thiện Quân – MSSV: 22146382
+
 •	Quách Đình Tuấn – MSSV: 22146444
+
 •	Phạm Công Khanh – MSSV: 22146329
+
 •	Nguyễn Quang Huy – MSSV: 22146314
  
 
@@ -11,9 +14,7 @@
 
 ## 1. Giới thiệu
 
-Tài liệu này trình bày mã nguồn và hướng dẫn sử dụng driver nhân Linux cho cảm biến áp suất và nhiệt độ *BMP180*, sử dụng giao tiếp *I2C*. Driver được thiết kế để vận hành trên các thiết bị như Raspberry Pi, cho phép đọc và xử lý dữ liệu nhiệt độ, áp suất khí quyển, cũng như tính toán độ cao so với mực nước biển.
-
-Driver hỗ trợ giao tiếp với không gian người dùng (user space) thông qua *character device* và các lệnh *ioctl*, cho phép người dùng lựa chọn chế độ đo (nhiệt độ, áp suất, độ cao) và thiết lập tần suất lấy mẫu phù hợp với yêu cầu ứng dụng thực tế.
+Driver BMP180 là một trình điều khiển thiết bị nhân Linux dành cho cảm biến áp suất và nhiệt độ BMP180 của Bosch. Driver này cho phép hệ điều hành Linux giao tiếp với cảm biến thông qua giao thức I2C để thu thập dữ liệu môi trường, hỗ trợ các ứng dụng về đo độ cao, khí tượng, và kiểm soát môi trường.
 
 ---
 
