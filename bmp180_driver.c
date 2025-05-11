@@ -46,6 +46,7 @@ struct bmp180_E2PROM_data {
 	s16 MB, MC, MD;
 };
 
+// Cấu trúc lưu trữ dữ liệu và trạng thái của BMP180
 struct bmp180_data {
 	struct i2c_client *client;
 	struct mutex lock;
@@ -58,16 +59,19 @@ struct bmp180_data {
     s32 B6;
 };
 
+// Hàm đọc 22 byte dữ liệu hiệu chỉnh từ EEPROM của BMP180
 static s32 bmp180_read_E2PROM(struct i2c_client *client)
 {
     u8 buf[BMP180_E2PROM_DATA_LENGTH];
 	struct bmp180_data *data = i2c_get_clientdata(client);
 	struct bmp180_E2PROM_data *cali = &(data->calibration);
+    // Đọc 22 byte từ địa chỉ EEPROM bắt đầu từ 0xAA
 	if (i2c_smbus_read_i2c_block_data(client, BMP180_E2PROM_1_REG, BMP180_E2PROM_DATA_LENGTH,buf) < 0) 
     {
         printk(KERN_ERR "Failed to read data\n");
         return -EIO;
     }
+    // Giải mã từng cặp byte để lấy hệ số hiệu chỉnh (theo datasheet BMP180)
     cali->AC1 =(buf[0] << 8) | buf[1]; //AC1
     cali->AC2 = (buf[2] << 8) | buf[3]; //AC2
     cali->AC3 = (buf[4] << 8) | buf[5]; //AC3
@@ -83,6 +87,7 @@ static s32 bmp180_read_E2PROM(struct i2c_client *client)
     
 }
 
+// Hàm yêu cầu đo và đọc giá trị nhiệt độ thô từ BMP180
 static s32 bmp180_update_raw_temperature(struct bmp180_data *data)
 {
 	u8 buf[2];
@@ -90,13 +95,13 @@ static s32 bmp180_update_raw_temperature(struct bmp180_data *data)
 	mutex_lock(&data->lock);
 	status = i2c_smbus_write_byte_data(data->client, BMP180_CTRL_MEAS_REG, BMP180_TEMP_MEAS);
 	if (status != 0) {
-		pr_err("Error while requesting temperature measurement.\n");
+		pr_err("Co loi khi yeu cau do nhiet do.\n");
 		goto exit;
 	}
 	msleep(DELAY);
 	status = i2c_smbus_read_i2c_block_data(data->client,BMP180_MSB_REG,2,buf);
 	if(status <0){
-        printk(KERN_ERR "Failed to read temperature data\n");
+        printk(KERN_ERR "Khong doc duoc du lieu nhiet do.\n");
 		goto exit;
 	}
 	data->raw_temperature = buf[0]<<8 | buf[1];
@@ -106,6 +111,7 @@ exit:
 	return status;
 }
 
+// Hàm yêu cầu cảm biến đo và đọc giá trị áp suất thô (raw_pressure)
 static s32 bmp180_update_raw_pressure(struct bmp180_data *data)
 {
 	u8 buf[3];
@@ -113,7 +119,7 @@ static s32 bmp180_update_raw_pressure(struct bmp180_data *data)
 	mutex_lock(&data->lock);
 	status = i2c_smbus_write_byte_data(data->client, BMP180_CTRL_MEAS_REG, BMP180_PRESS_MEAS + (data->oversampling_setting<<6));
 	if (status != 0) {
-		pr_err("Error while requesting pressure measurement.\n");
+		pr_err("Co loi khi yeu cau do ap suat.\n");
 		goto exit;
 	}
 
@@ -121,7 +127,7 @@ static s32 bmp180_update_raw_pressure(struct bmp180_data *data)
     
     status = i2c_smbus_read_i2c_block_data(data->client, BMP180_MSB_REG, 3, buf);
 	if(status <0){
-        printk(KERN_ERR "Failed to read pressure data\n");
+        printk(KERN_ERR "Khong doc duoc du lieu ap suat.\n");
 		goto exit;
 	}
     data->raw_pressure=(buf[0]<<16 | buf[1]<<8 | buf[2])>>(8 - data->oversampling_setting);
@@ -131,7 +137,7 @@ exit:
 	return status;
 }
 
-
+// Hàm tính toán nhiệt độ thực tế từ raw_temperature và calibration data
 static s32 bmp180_get_temperature(struct bmp180_data *data, int *temperature)
 {
     struct bmp180_E2PROM_data *cali = &data->calibration;
@@ -139,7 +145,7 @@ static s32 bmp180_get_temperature(struct bmp180_data *data, int *temperature)
     int status;
     status = bmp180_update_raw_temperature(data);
     if (status != 0){
-        printk(KERN_ERR "Failed to update temperature value %d\n",status);
+        printk(KERN_ERR "Khong cap nhat duoc gia tri nhiet do %d\n",status);
         goto exit;
     }
     X1 = ((data->raw_temperature - cali->AC6)* cali->AC5 )>> 15;
@@ -157,6 +163,7 @@ exit:
     return status;
 }
 
+// Hàm tính toán áp suất thực tế từ raw_pressure và hệ số hiệu chỉnh
 static s32 bmp180_get_pressure(struct bmp180_data *data, int *pressure)
 {
 	struct bmp180_E2PROM_data *cali = &data->calibration;
@@ -165,7 +172,7 @@ static s32 bmp180_get_pressure(struct bmp180_data *data, int *pressure)
 	int status;
 	status = bmp180_update_raw_pressure(data);
 	if (status != 0){
-        printk(KERN_ERR "Failed to update pressure value %d\n",status);
+        printk(KERN_ERR "Khong cap nhat duoc gia tri ap suat %d\n",status);
 		goto exit;
     }
 	X1 = ( cali->B2 * (((data->B6) * data->B6) >> 12) ) >>11;
@@ -191,6 +198,7 @@ static s32 bmp180_get_pressure(struct bmp180_data *data, int *pressure)
 exit:
 	return status;
 }
+
 
 static s32 bmp180_get_altitude(struct bmp180_data *data, unsigned int *altitude)
 {
@@ -228,7 +236,7 @@ static long bmp180_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
             if (oss < 0 || oss > 3)  
                 return -EINVAL;
             bmp_data->oversampling_setting = oss;
-            pr_info("Set oversampling to %d\n", oss);
+            pr_info("Dat lay mau qua muc thanh %d\n", oss);
             break;
         case BMP180_IOCTL_ALTITUDE:
             bmp180_get_temperature(bmp_data, NULL);
