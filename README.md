@@ -71,6 +71,7 @@ sudo dtc -I dts -O dtb -o bcm2710-rpi-zero-2-w.dtb bcm2710-rpi-zero-2-w.dts
 Thêm node cấu hình vào file .dts:
 
 dts
+```js
 bmp180@77 {
 
     compatible = "bosch,bmp180";
